@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Main page of local_atrisk.
+ * Categories the user can see at-risk students in, with how many are listed.
  *
  * @package    local_atrisk
  * @copyright  2026 DevLMS <contact@devlms.com>
@@ -24,14 +24,26 @@
 
 require_once(__DIR__ . '/../../config.php');
 
-$context = context_system::instance();
 require_login();
-require_capability('local/atrisk:view', $context);
+$context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/atrisk/index.php'));
 $PAGE->set_title(get_string('pluginname', 'local_atrisk'));
 $PAGE->set_heading(get_string('pluginname', 'local_atrisk'));
 
+$cats = core_course_category::make_categories_list('local/atrisk:view');
+if (!$cats) {
+    throw new required_capability_exception($context, 'local/atrisk:view', 'nopermissions', '');
+}
+$items = [];
+foreach ($cats as $id => $name) {
+    $items[] = [
+        'name' => $name,
+        'url' => (new moodle_url('/local/atrisk/category.php', ['id' => $id]))->out(false),
+        'count' => count(\local_atrisk\local\contacts::for_category($id)),
+    ];
+}
+
 echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('local_atrisk/index', []);
+echo $OUTPUT->render_from_template('local_atrisk/index', ['categories' => $items]);
 echo $OUTPUT->footer();

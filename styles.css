@@ -41,3 +41,31 @@
 .local-atrisk table th {
     vertical-align: middle;
 }
+
+/* Reason badges: dark text on light fills, readable on Bootstrap 4 and 5 (WCAG AA). */
+.local-atrisk .local-atrisk-reason {
+    margin: 0 .25rem .25rem 0;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.local-atrisk .local-atrisk-reason.is-inactive {
+    background: #fff3cd;
+}
+
+.local-atrisk .local-atrisk-reason.is-missed {
+    background: #f8d7da;
+}
+
+.local-atrisk .local-atrisk-reason.is-grade {
+    background: #e2e3f3;
+}
+
+.local-atrisk .local-atrisk-count {
+    background: #eef0f2;
+}
+
+.local-atrisk .local-atrisk-note {
+    max-width: 32rem;
+    white-space: pre-line;
+}

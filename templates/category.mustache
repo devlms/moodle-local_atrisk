@@ -1,0 +1,71 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_atrisk/category
+
+    Flagged students in a category.
+
+    Example context (json):
+    {
+        "category": "Biology",
+        "count": 1,
+        "empty": false,
+        "rows": [{
+            "name": "Ana Silva", "profileurl": "#", "course": "Cells", "courseurl": "#",
+            "reasons": [{"kind": "inactive", "label": "20 days without a visit"}],
+            "contacted": {"by": "Rui Costa", "when": "6/11/26, 10:00", "note": "Phoned"},
+            "contacturl": "#"
+        }]
+    }
+}}
+<div class="local-atrisk">
+    {{#empty}}
+    <p class="local-atrisk-empty">{{#str}}nobody, local_atrisk{{/str}}</p>
+    {{/empty}}
+    {{^empty}}
+    <p>{{#str}}listedin, local_atrisk, {"count": {{count}}, "category": {{#quote}}{{category}}{{/quote}} }{{/str}}</p>
+    <table class="table generaltable local-atrisk-table" id="local-atrisk-table">
+        <thead>
+            <tr>
+                <th scope="col">{{#str}}student, local_atrisk{{/str}}</th>
+                <th scope="col">{{#str}}course{{/str}}</th>
+                <th scope="col">{{#str}}why, local_atrisk{{/str}}</th>
+                <th scope="col">{{#str}}lastcontact, local_atrisk{{/str}}</th>
+                <th scope="col"><span class="visually-hidden">{{#str}}actions{{/str}}</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#rows}}
+            <tr>
+                <td><a href="{{profileurl}}">{{name}}</a></td>
+                <td><a href="{{courseurl}}">{{course}}</a></td>
+                <td>{{#reasons}}<span class="badge local-atrisk-reason is-{{kind}}">{{label}}</span> {{/reasons}}</td>
+                <td>
+                    {{#contacted}}
+                    <div class="fw-bold">{{by}}</div>
+                    <div class="text-muted small">{{when}}</div>
+                    <div class="local-atrisk-note">{{note}}</div>
+                    {{/contacted}}
+                    {{^contacted}}<span class="text-muted">{{#str}}notcontacted, local_atrisk{{/str}}</span>{{/contacted}}
+                </td>
+                <td><a class="btn btn-secondary btn-sm" href="{{contacturl}}">{{#str}}recordcontact, local_atrisk{{/str}}<span class="visually-hidden"> {{name}}</span></a></td>
+            </tr>
+            {{/rows}}
+        </tbody>
+    </table>
+    {{/empty}}
+</div>

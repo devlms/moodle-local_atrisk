@@ -45,5 +45,6 @@ class refresh_flags extends \core\task\scheduled_task {
      * Run the task.
      */
     public function execute() {
+        \local_atrisk\local\detector::refresh_all();
     }
 }

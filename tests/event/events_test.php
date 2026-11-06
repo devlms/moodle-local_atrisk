@@ -37,8 +37,10 @@ final class events_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
         $sink = $this->redirectEvents();
-        \local_atrisk\event\student_contacted::create(['context' => \context_system::instance()])->trigger();
-        $events = $sink->get_events();
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        \local_atrisk\local\contacts::record($student->id, $course->id, 'Called');
+        $events = array_values(array_filter($sink->get_events(), fn($e) => $e->component === 'local_atrisk'));
         $this->assertSame(['\\local_atrisk\\event\\student_contacted'], array_map(fn($e) => '\\' . get_class($e), $events));
         foreach ($events as $e) {
             $this->assertNotEmpty($e::get_name());

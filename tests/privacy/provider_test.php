@@ -44,7 +44,7 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         }
     }
 
-    public function test_find_export_and_delete(): void {
+    public function test_flag_find_export_and_delete(): void {
         global $DB;
         $this->resetAfterTest();
         $alice = $this->getDataGenerator()->create_user();
@@ -66,6 +66,26 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
             'grade' => 1.5,
             'timecreated' => time(),
         ]);
+        $ctx = \context_course::instance($course->id);
+        $this->assertContains((int) $ctx->id, array_map('intval', provider::get_contexts_for_userid($alice->id)->get_contextids()));
+        $userlist = new \core_privacy\local\request\userlist($ctx, 'local_atrisk');
+        provider::get_users_in_context($userlist);
+        $this->assertContains((int) $alice->id, array_map('intval', $userlist->get_userids()));
+        $this->export_context_data_for_user($alice->id, $ctx, 'local_atrisk');
+        $this->assertTrue(writer::with_context($ctx)->has_any_data());
+        provider::delete_data_for_user(new approved_contextlist($alice, 'local_atrisk', [$ctx->id]));
+        $this->assertSame(0, $DB->count_records('local_atrisk_flag', ['userid' => $alice->id]));
+        $this->assertGreaterThan(0, $DB->count_records('local_atrisk_flag', ['userid' => $bob->id]));
+        provider::delete_data_for_all_users_in_context($ctx);
+        $this->assertSame(0, $DB->count_records('local_atrisk_flag', ['courseid' => $course->id]));
+    }
+
+    public function test_contact_find_export_and_delete(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $alice = $this->getDataGenerator()->create_user();
+        $bob = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
         $DB->insert_record('local_atrisk_contact', [
             'userid' => $alice->id,
             'courseid' => $course->id,
@@ -80,21 +100,6 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
             'note' => 'Sample',
             'timecreated' => time(),
         ]);
-
-        // Table local_atrisk_flag.
-        $ctx = \context_course::instance($course->id);
-        $this->assertContains((int) $ctx->id, array_map('intval', provider::get_contexts_for_userid($alice->id)->get_contextids()));
-        $userlist = new \core_privacy\local\request\userlist($ctx, 'local_atrisk');
-        provider::get_users_in_context($userlist);
-        $this->assertContains((int) $alice->id, array_map('intval', $userlist->get_userids()));
-        $this->export_context_data_for_user($alice->id, $ctx, 'local_atrisk');
-        $this->assertTrue(writer::with_context($ctx)->has_any_data());
-        provider::delete_data_for_user(new approved_contextlist($alice, 'local_atrisk', [$ctx->id]));
-        $this->assertSame(0, $DB->count_records('local_atrisk_flag', ['userid' => $alice->id]));
-        $this->assertGreaterThan(0, $DB->count_records('local_atrisk_flag', ['userid' => $bob->id]));
-        provider::delete_data_for_all_users_in_context($ctx);
-        $this->assertSame(0, $DB->count_records('local_atrisk_flag', ['courseid' => $course->id]));
-        // Table local_atrisk_contact.
         $ctx = \context_course::instance($course->id);
         $this->assertContains((int) $ctx->id, array_map('intval', provider::get_contexts_for_userid($alice->id)->get_contextids()));
         $userlist = new \core_privacy\local\request\userlist($ctx, 'local_atrisk');
