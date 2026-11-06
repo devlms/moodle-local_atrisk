@@ -38,6 +38,7 @@ $string['listedin'] = '{$a->count} students listed in {$a->category} and its sub
 $string['misseddeadlines'] = 'Missed deadlines';
 $string['misseddeadlines_desc'] = 'A student with at least this many assignments past their due date and not submitted is flagged.';
 $string['nobody'] = 'Nobody is listed in this category right now. The list refreshes every few hours.';
+$string['nocategories'] = 'You cannot see at-risk students in any category. A manager of a category can.';
 $string['notcontacted'] = 'Not contacted yet';
 $string['note'] = 'Note';
 $string['note_help'] = 'What you said or agreed with the student. Other staff who can see this page will read it.';

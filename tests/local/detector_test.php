@@ -164,6 +164,14 @@ final class detector_test extends \advanced_testcase {
         $this->assertArrayNotHasKey($fine->id, $flags);
     }
 
+    public function test_ungraded_items_do_not_count_against_the_course_total(): void {
+        $u = $this->student(1);
+        $this->grade($u, 70);
+        $this->getDataGenerator()->create_grade_item(['courseid' => $this->course->id, 'grademax' => 100]);
+        $this->getDataGenerator()->create_grade_item(['courseid' => $this->course->id, 'grademax' => 100]);
+        $this->assertArrayNotHasKey($u->id, $this->flags());
+    }
+
     public function test_grade_threshold_zero_turns_the_grade_check_off(): void {
         set_config('gradebelow', 0, 'local_atrisk');
         $low = $this->student(1);

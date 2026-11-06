@@ -32,9 +32,6 @@ $PAGE->set_title(get_string('pluginname', 'local_atrisk'));
 $PAGE->set_heading(get_string('pluginname', 'local_atrisk'));
 
 $cats = core_course_category::make_categories_list('local/atrisk:view');
-if (!$cats) {
-    throw new required_capability_exception($context, 'local/atrisk:view', 'nopermissions', '');
-}
 $items = [];
 foreach ($cats as $id => $name) {
     $items[] = [
@@ -45,5 +42,10 @@ foreach ($cats as $id => $name) {
 }
 
 echo $OUTPUT->header();
+if (!$items) {
+    echo $OUTPUT->notification(get_string('nocategories', 'local_atrisk'), 'info', false);
+    echo $OUTPUT->footer();
+    die();
+}
 echo $OUTPUT->render_from_template('local_atrisk/index', ['categories' => $items]);
 echo $OUTPUT->footer();

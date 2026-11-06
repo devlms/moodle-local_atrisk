@@ -171,16 +171,24 @@ class detector {
         }
         [$usql, $params] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'u');
         $params['itemid'] = $item->id;
-        $rows = $DB->get_records_select_menu(
+        // Natural aggregation leaves ungraded items out of each student's own maximum, which it stores
+        // per student in rawgrademax. Use that when it is set, the item's range otherwise.
+        $rows = $DB->get_records_select(
             'grade_grades',
             "itemid = :itemid AND finalgrade IS NOT NULL AND userid $usql",
             $params,
             '',
-            'userid, finalgrade'
+            'userid, finalgrade, rawgrademin, rawgrademax'
         );
         $out = [];
-        foreach ($rows as $userid => $grade) {
-            $out[$userid] = round(($grade - $item->grademin) / ($item->grademax - $item->grademin) * 100, 2);
+        foreach ($rows as $r) {
+            $min = (float) $item->grademin;
+            $max = (float) $item->grademax;
+            if ($r->rawgrademax !== null && (float) $r->rawgrademax > (float) $r->rawgrademin) {
+                $min = (float) $r->rawgrademin;
+                $max = (float) $r->rawgrademax;
+            }
+            $out[$r->userid] = round(($r->finalgrade - $min) / ($max - $min) * 100, 2);
         }
         return $out;
     }

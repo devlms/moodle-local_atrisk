@@ -12,12 +12,12 @@ One page per course category listing students who may be falling behind: no visi
 
 | Part | Status |
 | --- | --- |
-| A manager opens a category and sees a student who has not opened a course in 20 days, with the reason. | Planned |
-| A student with two missed assignment deadlines is listed with "2 missed". | Planned |
-| A student whose course total is under the threshold is listed with their grade. | Planned |
-| A student with no problems is not listed. | Planned |
-| A manager marks a student as contacted with a note; the row shows who and when, and the student stays listed until the reason clears. | Planned |
-| A teacher without the capability cannot open the page. | Planned |
+| A manager opens a category and sees a student who has not opened a course in 20 days, with the reason. | Done |
+| A student with two missed assignment deadlines is listed with "2 missed". | Done |
+| A student whose course total is under the threshold is listed with their grade. | Done |
+| A student with no problems is not listed. | Done |
+| A manager marks a student as contacted with a note; the row shows who and when, and the student stays listed until the reason clears. | Done |
+| A teacher without the capability cannot open the page. | Done |
 
 ## Install
 

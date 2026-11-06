@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once($CFG->libdir . '/formslib.php');
 
 $id = required_param('id', PARAM_INT);
 $flag = $DB->get_record('local_atrisk_flag', ['id' => $id], '*', MUST_EXIST);
