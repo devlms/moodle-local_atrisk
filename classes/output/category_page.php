@@ -101,7 +101,10 @@ class category_page implements renderable, templatable {
                 'courseurl' => (new \moodle_url('/course/view.php', ['id' => $r->courseid]))->out(false),
                 'reasons' => $this->reasons($r),
                 'contacted' => $contacted,
-                'contacturl' => (new \moodle_url('/local/atrisk/contact.php', ['id' => $r->id]))->out(false),
+                'contacturl' => (new \moodle_url('/local/atrisk/contact.php', [
+                    'id' => $r->id,
+                    'cat' => $this->category->id,
+                ]))->out(false),
             ];
         }
         return [

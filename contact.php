@@ -28,17 +28,24 @@ require_once($CFG->libdir . '/formslib.php');
 $id = required_param('id', PARAM_INT);
 $flag = $DB->get_record('local_atrisk_flag', ['id' => $id], '*', MUST_EXIST);
 $course = get_course($flag->courseid);
-$context = context_coursecat::instance($course->category);
+// The category the user came from: the course's own one or any category above it.
+$catid = optional_param('cat', $course->category, PARAM_INT);
+$path = explode('/', trim((string) $DB->get_field('course_categories', 'path', ['id' => $course->category]), '/'));
+if (!in_array((string) $catid, $path, true)) {
+    $catid = $course->category;
+}
+$context = context_coursecat::instance($catid);
 require_login();
 require_capability('local/atrisk:view', $context);
 
-$back = new moodle_url('/local/atrisk/category.php', ['id' => $course->category]);
+$back = new moodle_url('/local/atrisk/category.php', ['id' => $catid]);
 $student = core_user::get_user($flag->userid, '*', MUST_EXIST);
 $PAGE->set_context($context);
-$PAGE->set_url(new moodle_url('/local/atrisk/contact.php', ['id' => $id]));
+$PAGE->set_url(new moodle_url('/local/atrisk/contact.php', ['id' => $id, 'cat' => $catid]));
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('recordcontact', 'local_atrisk'));
-$PAGE->set_heading(core_course_category::get($course->category, MUST_EXIST, true)->get_formatted_name());
+$PAGE->set_heading(core_course_category::get($catid, MUST_EXIST, true)->get_formatted_name());
+$PAGE->navbar->add(get_string('pluginname', 'local_atrisk'), $back);
 
 $form = new \local_atrisk\form\contact_form($PAGE->url);
 $form->set_data(['id' => $id]);

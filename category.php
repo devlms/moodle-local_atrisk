@@ -36,7 +36,6 @@ $PAGE->set_pagelayout('admin');
 $title = get_string('pluginname', 'local_atrisk') . ': ' . $category->get_formatted_name();
 $PAGE->set_title($title);
 $PAGE->set_heading($category->get_formatted_name());
-$PAGE->navbar->add(get_string('pluginname', 'local_atrisk'));
 
 $page = new \local_atrisk\output\category_page($category, \local_atrisk\local\contacts::for_category($id));
 echo $OUTPUT->header();

@@ -8,9 +8,10 @@ Feature: At-risk students
     Given the following "categories" exist:
       | name    | category | idnumber |
       | Science | 0        | SCI      |
+      | Biology | SCI      | BIO      |
     And the following "courses" exist:
       | fullname  | shortname | category |
-      | Biology 1 | BIO1      | SCI      |
+      | Biology 1 | BIO1      | BIO      |
     And the following "users" exist:
       | username | firstname | lastname |
       | away     | Ana       | Away     |
@@ -71,6 +72,7 @@ Feature: At-risk students
     And I set the field "Note" to "Phoned. Back next week."
     And I press "Record contact"
     Then I should see "Contact with Ana Away recorded."
+    And I should see "Science" in the "page-header" "region"
     And "Ana Away" row "Last contact" column of "local-atrisk-table" table should contain "Marta Manager"
     And "Ana Away" row "Last contact" column of "local-atrisk-table" table should contain "Phoned. Back next week."
     And "Ana Away" row "Why listed" column of "local-atrisk-table" table should contain "20 days without a visit"
