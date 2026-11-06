@@ -50,7 +50,7 @@ final class category_page_test extends \advanced_testcase {
         set_config('misseddeadlines', 2, 'local_atrisk');
         set_config('gradebelow', 50, 'local_atrisk');
         $cat = $this->getDataGenerator()->create_category();
-        $page = new category_page(\core_course_category::get($cat->id), [
+        $page = new category_page(\core_course_category::get($cat->id, MUST_EXIST, true), [
             $this->row(['inactive' => 20, 'missed' => 1, 'grade' => 72.5]),
             $this->row(['id' => 2, 'inactive' => 2, 'missed' => 3, 'grade' => 41.25]),
         ]);
@@ -70,7 +70,7 @@ final class category_page_test extends \advanced_testcase {
         $this->resetAfterTest();
         $cat = $this->getDataGenerator()->create_category();
         $staff = $this->getDataGenerator()->create_user(['firstname' => 'Rui', 'lastname' => 'Costa']);
-        $page = new category_page(\core_course_category::get($cat->id), [
+        $page = new category_page(\core_course_category::get($cat->id, MUST_EXIST, true), [
             $this->row(['inactive' => 30, 'lastnote' => 'Phoned', 'lastcontactedby' => $staff->id, 'lastcontacted' => 1767225600]),
         ]);
         $ctx = $page->export_for_template(new \renderer_base(new \moodle_page(), ''));
@@ -83,7 +83,7 @@ final class category_page_test extends \advanced_testcase {
     public function test_an_empty_category_says_so(): void {
         $this->resetAfterTest();
         $cat = $this->getDataGenerator()->create_category();
-        $ctx = (new category_page(\core_course_category::get($cat->id), []))
+        $ctx = (new category_page(\core_course_category::get($cat->id, MUST_EXIST, true), []))
             ->export_for_template(new \renderer_base(new \moodle_page(), ''));
         $this->assertTrue($ctx['empty']);
         $this->assertSame([], $ctx['rows']);
