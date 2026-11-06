@@ -1,0 +1,43 @@
+/*
+ * Moodle 4.5 runs Bootstrap 4 and Moodle 5.x runs Bootstrap 5. Utility classes that exist in only one
+ * of them are defined here, scoped to this plugin, so the same templates look the same on both.
+ * Use visually-hidden for screen reader text (sr-only is deprecated on 5.x), and plain select elements
+ * with form-select (custom-select is deprecated on 5.x).
+ */
+.local-atrisk .fw-bold {
+    font-weight: 700;
+}
+
+.local-atrisk .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.local-atrisk .gap-1 {
+    gap: .25rem;
+}
+
+.local-atrisk .gap-2 {
+    gap: .5rem;
+}
+
+.local-atrisk .gap-3 {
+    gap: 1rem;
+}
+
+/* .badge text is white on 5.x and dark on 4.5. Set it on every badge the plugin uses. */
+.local-atrisk .badge {
+    color: #1d2125;
+}
+
+.local-atrisk table td,
+.local-atrisk table th {
+    vertical-align: middle;
+}

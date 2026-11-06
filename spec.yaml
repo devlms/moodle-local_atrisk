@@ -1,0 +1,54 @@
+component: local_atrisk
+type: local
+name: At-risk students
+summary: >-
+  One page per course category listing students who may be falling behind: no visit to a course for a
+  while, missed assignment deadlines, or a course total under a threshold. Staff mark who they contacted,
+  so nobody is chased twice and nobody is forgotten.
+moodle: ["4.5", "5.3"]
+release: 0.1.0
+capabilities:
+  view:
+    desc: See at-risk students in a category and mark them as contacted
+    context: coursecat
+    archetypes: [manager]
+    risk: [personal]
+    type: write
+settings:
+  - {name: inactivedays, type: int, label: Days without a visit, help: A student who has not opened an enrolled course for this many days is flagged., default: 14}
+  - {name: misseddeadlines, type: int, label: Missed deadlines, help: A student with at least this many assignments past their due date and not submitted is flagged., default: 2}
+  - {name: gradebelow, type: int, label: Course total below (%), help: A student whose course total is below this percentage is flagged. 0 turns this off., default: 50}
+tables:
+  local_atrisk_flag:
+    desc: Students currently flagged in a course, rebuilt by a scheduled task.
+    context: course
+    user: [userid]
+    fields:
+      userid: int
+      courseid: int
+      inactive: {type: int, desc: Days since the student last opened the course.}
+      missed: {type: int, desc: Assignments past their due date and not submitted.}
+      grade: {type: number, decimals: 2, required: false, desc: The course total as a percentage.}
+      timecreated: int
+  local_atrisk_contact:
+    desc: Who contacted a flagged student, when, and a note.
+    context: course
+    user: [userid, contactedby]
+    fields:
+      userid: int
+      courseid: int
+      contactedby: {type: int, desc: The staff member who contacted the student.}
+      note: {type: text, desc: What was said or agreed.}
+      timecreated: int
+events:
+  - {name: student_contacted, label: At-risk student contacted, crud: c}
+tasks:
+  - {name: refresh_flags, label: Refresh at-risk students, schedule: "23 */4 * * *"}
+acceptance:
+  - A manager opens a category and sees a student who has not opened a course in 20 days, with the reason.
+  - A student with two missed assignment deadlines is listed with "2 missed".
+  - A student whose course total is under the threshold is listed with their grade.
+  - A student with no problems is not listed.
+  - A manager marks a student as contacted with a note; the row shows who and when, and the student stays listed until the reason clears.
+  - A teacher without the capability cannot open the page.
+out_of_scope: [messaging students from the page, predictions or machine learning, per-course thresholds]
