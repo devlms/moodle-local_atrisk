@@ -27,6 +27,7 @@ namespace local_atrisk\privacy;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\writer;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\privacy\provider::class)]
 /**
  * Tests for the privacy provider.
  *
@@ -35,7 +36,6 @@ use core_privacy\local\request\writer;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_atrisk\privacy\provider
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\privacy\provider::class)]
 final class provider_test extends \core_privacy\tests\provider_testcase {
     public function test_metadata_names_every_table(): void {
         $collection = provider::get_metadata(new \core_privacy\local\metadata\collection('local_atrisk'));

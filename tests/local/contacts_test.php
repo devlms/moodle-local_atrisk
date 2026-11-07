@@ -16,6 +16,8 @@
 
 namespace local_atrisk\local;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\local\contacts::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\event\student_contacted::class)]
 /**
  * Tests for recording who contacted a flagged student, and for listing a category.
  *
@@ -25,8 +27,6 @@ namespace local_atrisk\local;
  * @covers     \local_atrisk\local\contacts
  * @covers     \local_atrisk\event\student_contacted
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\local\contacts::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\event\student_contacted::class)]
 final class contacts_test extends \advanced_testcase {
     public function test_recording_a_contact_stores_who_when_and_the_note_and_logs_it(): void {
         global $DB;

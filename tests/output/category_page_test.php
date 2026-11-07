@@ -16,6 +16,7 @@
 
 namespace local_atrisk\output;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\output\category_page::class)]
 /**
  * Tests for the category page's template context.
  *
@@ -24,7 +25,6 @@ namespace local_atrisk\output;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_atrisk\output\category_page
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\output\category_page::class)]
 final class category_page_test extends \advanced_testcase {
     /** @var int|null course the rows point at, made on first use */
     private ?int $courseid = null;

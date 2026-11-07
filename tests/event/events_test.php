@@ -24,6 +24,7 @@
 
 namespace local_atrisk\event;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\event\student_contacted::class)]
 /**
  * Tests for the events.
  *
@@ -32,7 +33,6 @@ namespace local_atrisk\event;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_atrisk\event\student_contacted
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\event\student_contacted::class)]
 final class events_test extends \advanced_testcase {
     public function test_events_trigger_with_a_name_and_description(): void {
         $this->resetAfterTest();

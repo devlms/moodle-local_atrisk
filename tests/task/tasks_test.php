@@ -24,6 +24,7 @@
 
 namespace local_atrisk\task;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\task\refresh_flags::class)]
 /**
  * Tests for the scheduled tasks.
  *
@@ -32,7 +33,6 @@ namespace local_atrisk\task;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_atrisk\task\refresh_flags
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\task\refresh_flags::class)]
 final class tasks_test extends \advanced_testcase {
     public function test_tasks_are_registered_and_run(): void {
         $this->resetAfterTest();
