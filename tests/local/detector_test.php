@@ -24,6 +24,7 @@ namespace local_atrisk\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_atrisk\local\detector
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_atrisk\local\detector::class)]
 final class detector_test extends \advanced_testcase {
     /** @var \stdClass course used by every test */
     private \stdClass $course;
