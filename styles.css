@@ -73,3 +73,9 @@
 .local-atrisk .local-atrisk-table .btn {
     white-space: nowrap;
 }
+
+.local-atrisk-freshness {
+    display: block;
+    color: #5b6269;
+    font-size: .875rem;
+}

@@ -89,4 +89,14 @@ final class category_page_test extends \advanced_testcase {
         $this->assertTrue($ctx['empty']);
         $this->assertSame([], $ctx['rows']);
     }
+
+    public function test_freshness_says_when_the_list_was_rebuilt(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->assertSame('', \local_atrisk\output\category_page::freshness());
+        $course = $this->getDataGenerator()->create_course();
+        $DB->insert_record('local_atrisk_flag', ['userid' => 2, 'courseid' => $course->id, 'inactive' => 30, 'missed' => 0,
+            'grade' => null, 'timecreated' => time() - 3 * HOURSECS]);
+        $this->assertStringContainsString('Rebuilt 3 hours', \local_atrisk\output\category_page::freshness());
+    }
 }

@@ -109,11 +109,32 @@ class category_page implements renderable, templatable {
             ];
         }
         return [
+            'freshness' => self::freshness(),
             // Unescaped here: the template escapes once.
             'category' => $this->category->get_formatted_name(['escape' => false]),
             'count' => count($rows),
             'rows' => $rows,
             'empty' => !$rows,
         ];
+    }
+
+    /**
+     * When the list was last rebuilt and when it will be next, so nobody mistakes it for live data.
+     *
+     * @return string Empty before the first rebuild.
+     */
+    public static function freshness(): string {
+        global $DB;
+        $last = (int) $DB->get_field_sql('SELECT MAX(timecreated) FROM {local_atrisk_flag}');
+        $task = \core\task\manager::get_scheduled_task(\local_atrisk\task\refresh_flags::class);
+        $next = $task && !$task->get_disabled() ? (int) $task->get_next_run_time() : 0;
+        if (!$last) {
+            return '';
+        }
+        $a = (object) [
+            'last' => format_time(max(60, time() - $last)),
+            'next' => userdate($next, get_string('strftimetime', 'langconfig')),
+        ];
+        return get_string($next > time() ? 'freshness' : 'freshnessnonext', 'local_atrisk', $a);
     }
 }

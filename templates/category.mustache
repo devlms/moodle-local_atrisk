@@ -22,6 +22,7 @@
     Example context (json):
     {
         "category": "Biology",
+        "freshness": "Rebuilt 3 hours ago; next at 16:00.",
         "count": 1,
         "empty": false,
         "rows": [{
@@ -37,7 +38,8 @@
     <p class="local-atrisk-empty">{{#str}}nobody, local_atrisk{{/str}}</p>
     {{/empty}}
     {{^empty}}
-    <p>{{#str}}listedin, local_atrisk, {"count": {{count}}, "category": {{#quote}}{{category}}{{/quote}} }{{/str}}</p>
+    <p class="local-atrisk-summary">{{#str}}listedin, local_atrisk, {"count": {{count}}, "category": {{#quote}}{{category}}{{/quote}} }{{/str}}
+        {{#freshness}}<span class="local-atrisk-freshness">{{freshness}}</span>{{/freshness}}</p>
     <table class="table generaltable local-atrisk-table" id="local-atrisk-table">
         <thead>
             <tr>
