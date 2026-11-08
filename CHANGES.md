@@ -1,5 +1,11 @@
 # Changes
 
+## 1.1.0 (2026-11-08)
+
+Redesigned pages, same features.
+
+- The category page says when the list was rebuilt and when it will be next.
+
 ## 1.0.0 (2026-11-08)
 
 First stable release.
