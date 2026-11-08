@@ -7,6 +7,7 @@
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-8.1%20to%208.4-777bb4)](https://www.php.net/supported-versions.php)
 [![Maturity](https://img.shields.io/badge/maturity-stable-green)](version.php)
+[![Sponsor](https://img.shields.io/badge/sponsor-this%20plugin-2438ff)](https://devlms.com/sponsors/?plugin=local_atrisk)
 
 One page per course category that lists the students who stopped opening a course, missed assignment deadlines, or have a low course total, with the reason next to each name. Staff record who they contacted and what was agreed, so nobody gets called twice and nobody gets forgotten.
 
@@ -62,6 +63,12 @@ PHPUnit covers each rule and its edge cases (never visited, extensions, ungraded
 ## Who made it
 
 [DevLMS](https://devlms.com) builds custom Moodle plugins. Need other signals, per-course thresholds, or the list sent to your CRM? [Get a quote](https://devlms.com/work/at-risk-students/).
+
+## Sponsors
+
+<!-- sponsors:start -->
+No sponsors yet. [Sponsor this plugin](https://devlms.com/sponsors/?plugin=local_atrisk): your name or logo, with a link to your site, goes here and on [devlms.com/sponsors](https://devlms.com/sponsors/).
+<!-- sponsors:end -->
 
 ## License
 
