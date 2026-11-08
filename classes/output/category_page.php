@@ -102,13 +102,15 @@ class category_page implements renderable, templatable {
                 'reasons' => $this->reasons($r),
                 'contacted' => $contacted,
                 'contacturl' => (new \moodle_url('/local/atrisk/contact.php', [
-                    'id' => $r->id,
+                    'userid' => $r->userid,
+                    'courseid' => $r->courseid,
                     'cat' => $this->category->id,
                 ]))->out(false),
             ];
         }
         return [
-            'category' => $this->category->get_formatted_name(),
+            // Unescaped here: the template escapes once.
+            'category' => $this->category->get_formatted_name(['escape' => false]),
             'count' => count($rows),
             'rows' => $rows,
             'empty' => !$rows,

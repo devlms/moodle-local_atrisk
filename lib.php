@@ -40,3 +40,15 @@ function local_atrisk_extend_navigation_category_settings(navigation_node $navig
         );
     }
 }
+
+/**
+ * Remove flags and contact notes of a course that is being deleted. After deletion its context is gone,
+ * so the privacy API could no longer find them.
+ *
+ * @param stdClass $course
+ */
+function local_atrisk_pre_course_delete($course) {
+    global $DB;
+    $DB->delete_records('local_atrisk_flag', ['courseid' => $course->id]);
+    $DB->delete_records('local_atrisk_contact', ['courseid' => $course->id]);
+}

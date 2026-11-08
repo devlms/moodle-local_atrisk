@@ -6,7 +6,7 @@
 [![Moodle](https://img.shields.io/badge/Moodle-4.5%20to%205.3-f98012)](https://moodledev.io/general/releases)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-8.1%20to%208.4-777bb4)](https://www.php.net/supported-versions.php)
-[![Maturity](https://img.shields.io/badge/maturity-alpha-orange)](version.php)
+[![Maturity](https://img.shields.io/badge/maturity-stable-green)](version.php)
 
 One page per course category that lists the students who stopped opening a course, missed assignment deadlines, or have a low course total, with the reason next to each name. Staff record who they contacted and what was agreed, so nobody gets called twice and nobody gets forgotten.
 
@@ -19,9 +19,9 @@ Moodle can show a teacher who has not visited one course, and its Analytics mode
 | Part | Status |
 | --- | --- |
 | Flags students with no visit to a course for N days (counted from enrolment if they never opened it) | Done |
-| Flags students with N or more assignments past their due date and not submitted; extensions that have not run out do not count | Done |
+| Flags students with N or more assignments past their due date and not submitted; extensions and due date overrides that have not run out do not count; offline and group submission assignments are left out | Done |
 | Flags students whose course total is under N%, out of their own maximum so ungraded work does not count against them; can be turned off | Done |
-| Only active students: teachers, suspended enrolments and hidden courses are left out | Done |
+| Only active students in running courses: teachers, suspended enrolments, hidden courses and courses that ended or have not started are left out | Done |
 | A scheduled task rebuilds the list every four hours, so solved problems drop off | Done |
 | An At-risk students tab on each course category, covering its subcategories | Done |
 | Record a contact with a note; the list shows who, when and the note | Done |

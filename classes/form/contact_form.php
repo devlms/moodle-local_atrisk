@@ -29,12 +29,25 @@ class contact_form extends \moodleform {
      */
     protected function definition() {
         $f = $this->_form;
-        $f->addElement('hidden', 'id');
-        $f->setType('id', PARAM_INT);
         $f->addElement('textarea', 'note', get_string('note', 'local_atrisk'), ['rows' => 4, 'cols' => 60]);
         $f->setType('note', PARAM_TEXT);
         $f->addRule('note', null, 'required', null, 'client');
         $f->addHelpButton('note', 'note', 'local_atrisk');
         $this->add_action_buttons(true, get_string('recordcontact', 'local_atrisk'));
+    }
+
+    /**
+     * The note is required on the server too, not only in the browser.
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        if (trim((string) ($data['note'] ?? '')) === '') {
+            $errors['note'] = get_string('required');
+        }
+        return $errors;
     }
 }

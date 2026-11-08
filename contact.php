@@ -25,9 +25,10 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/formslib.php');
 
-$id = required_param('id', PARAM_INT);
-$flag = $DB->get_record('local_atrisk_flag', ['id' => $id], '*', MUST_EXIST);
-$course = get_course($flag->courseid);
+require_login();
+// Keyed by student and course, not by flag: flags are rebuilt every few hours and get new ids.
+$userid = required_param('userid', PARAM_INT);
+$course = get_course(required_param('courseid', PARAM_INT));
 // The category the user came from: the course's own one or any category above it.
 $catid = optional_param('cat', $course->category, PARAM_INT);
 $path = explode('/', trim((string) $DB->get_field('course_categories', 'path', ['id' => $course->category]), '/'));
@@ -35,25 +36,27 @@ if (!in_array((string) $catid, $path, true)) {
     $catid = $course->category;
 }
 $context = context_coursecat::instance($catid);
-require_login();
 require_capability('local/atrisk:view', $context);
 
 $back = new moodle_url('/local/atrisk/category.php', ['id' => $catid]);
-$student = core_user::get_user($flag->userid, '*', MUST_EXIST);
+$student = core_user::get_user($userid, '*', MUST_EXIST);
+if (!is_enrolled(context_course::instance($course->id), $student)) {
+    throw new moodle_exception('notenrolled', 'local_atrisk');
+}
 $PAGE->set_context($context);
-$PAGE->set_url(new moodle_url('/local/atrisk/contact.php', ['id' => $id, 'cat' => $catid]));
+$PAGE->set_url(new moodle_url('/local/atrisk/contact.php', ['userid' => $userid, 'courseid' => $course->id, 'cat' => $catid]));
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('recordcontact', 'local_atrisk'));
 $PAGE->set_heading(core_course_category::get($catid, MUST_EXIST, true)->get_formatted_name());
 $PAGE->navbar->add(get_string('pluginname', 'local_atrisk'), $back);
 
 $form = new \local_atrisk\form\contact_form($PAGE->url);
-$form->set_data(['id' => $id]);
+
 if ($form->is_cancelled()) {
     redirect($back);
 }
 if ($data = $form->get_data()) {
-    \local_atrisk\local\contacts::record($flag->userid, $flag->courseid, $data->note);
+    \local_atrisk\local\contacts::record($userid, (int) $course->id, $data->note);
     $done = get_string('contactrecorded', 'local_atrisk', s(fullname($student)));
     redirect($back, $done, null, \core\output\notification::NOTIFY_SUCCESS);
 }

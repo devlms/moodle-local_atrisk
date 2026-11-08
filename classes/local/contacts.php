@@ -50,6 +50,33 @@ class contacts {
     }
 
     /**
+     * How many flags each category holds, counting its subcategories.
+     *
+     * @return int[] category id => count, only categories with flags
+     */
+    public static function counts_by_category(): array {
+        global $DB;
+        $direct = $DB->get_records_sql_menu(
+            "SELECT c.category, COUNT(f.id)
+               FROM {local_atrisk_flag} f
+               JOIN {course} c ON c.id = f.courseid
+           GROUP BY c.category"
+        );
+        $counts = [];
+        foreach ($DB->get_records_menu('course_categories', null, '', 'id, path') as $id => $path) {
+            $n = (int) ($direct[$id] ?? 0);
+            if (!$n) {
+                continue;
+            }
+            // A flag counts for its own category and every category above it.
+            foreach (explode('/', trim($path, '/')) as $ancestor) {
+                $counts[(int) $ancestor] = ($counts[(int) $ancestor] ?? 0) + $n;
+            }
+        }
+        return $counts;
+    }
+
+    /**
      * Flagged students in courses of a category and its subcategories, with the latest contact.
      *
      * @param int $categoryid

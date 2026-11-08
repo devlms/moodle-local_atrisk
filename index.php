@@ -32,12 +32,14 @@ $PAGE->set_title(get_string('pluginname', 'local_atrisk'));
 $PAGE->set_heading(get_string('pluginname', 'local_atrisk'));
 
 $cats = core_course_category::make_categories_list('local/atrisk:view');
+// One query for every category instead of the full list per category.
+$counts = \local_atrisk\local\contacts::counts_by_category();
 $items = [];
 foreach ($cats as $id => $name) {
     $items[] = [
         'name' => $name,
         'url' => (new moodle_url('/local/atrisk/category.php', ['id' => $id]))->out(false),
-        'count' => count(\local_atrisk\local\contacts::for_category($id)),
+        'count' => $counts[$id] ?? 0,
     ];
 }
 

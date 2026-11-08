@@ -30,18 +30,21 @@ namespace local_atrisk\local;
  */
 class detector {
     /**
-     * Rebuild flags for every visible course except the front page.
+     * Rebuild flags for every visible course that is running now (started, not ended), except the front page.
      */
     public static function refresh_all(): void {
         global $DB;
-        $ids = $DB->get_fieldset_select('course', 'id', 'id <> :site AND visible = 1', ['site' => SITEID]);
+        $running = 'visible = 1 AND startdate <= :now1 AND (enddate = 0 OR enddate > :now2)';
+        $params = ['now1' => time(), 'now2' => time()];
+        $ids = $DB->get_fieldset_select('course', 'id', "id <> :site AND $running", ['site' => SITEID] + $params);
         foreach ($ids as $id) {
             self::refresh_course((int) $id);
         }
-        // Hidden or deleted courses keep no flags.
+        // Hidden, finished, not yet started or deleted courses keep no flags.
         $DB->delete_records_select(
             'local_atrisk_flag',
-            'courseid NOT IN (SELECT id FROM {course} WHERE visible = 1)'
+            "courseid NOT IN (SELECT id FROM {course} WHERE $running)",
+            $params
         );
     }
 
@@ -127,7 +130,10 @@ class detector {
     }
 
     /**
-     * Assignments past their due date (or extension) that each student has not submitted.
+     * Assignments past their due date (or extension, or user override) that each student has not submitted.
+     *
+     * Offline assignments (no submissions) and group submission assignments are left out: the first
+     * cannot be submitted, the second is submitted once per group, not per student.
      *
      * @param int $courseid
      * @param int[] $userids
@@ -140,14 +146,16 @@ class detector {
         $params += ['courseid' => $courseid, 'now1' => $now, 'now2' => $now, 'submitted' => 'submitted', 'modname' => 'assign'];
         $sql = "SELECT u.id, COUNT(a.id) AS missed
                   FROM {user} u
-                  JOIN {assign} a ON a.course = :courseid AND a.duedate > 0 AND a.duedate < :now1
+                  JOIN {assign} a ON a.course = :courseid AND a.nosubmissions = 0 AND a.teamsubmission = 0
                   JOIN {modules} m ON m.name = :modname
                   JOIN {course_modules} cm ON cm.instance = a.id AND cm.module = m.id
                                           AND cm.visible = 1 AND cm.deletioninprogress = 0
+             LEFT JOIN {assign_overrides} o ON o.assignid = a.id AND o.userid = u.id
              LEFT JOIN {assign_user_flags} f ON f.assignment = a.id AND f.userid = u.id
              LEFT JOIN {assign_submission} s ON s.assignment = a.id AND s.userid = u.id
                                             AND s.latest = 1 AND s.status = :submitted
                  WHERE u.id $usql
+                   AND COALESCE(o.duedate, a.duedate) > 0 AND COALESCE(o.duedate, a.duedate) < :now1
                    AND s.id IS NULL
                    AND (f.extensionduedate IS NULL OR f.extensionduedate = 0 OR f.extensionduedate < :now2)
               GROUP BY u.id";

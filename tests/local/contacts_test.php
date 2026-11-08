@@ -80,4 +80,21 @@ final class contacts_test extends \advanced_testcase {
         $this->assertSame('Second call', $r->lastnote);
         $this->assertEquals(get_admin()->id, $r->lastcontactedby);
     }
+
+    public function test_counts_by_category_include_subcategories(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $top = $gen->create_category();
+        $sub = $gen->create_category(['parent' => $top->id]);
+        $c1 = $gen->create_course(['category' => $top->id]);
+        $c2 = $gen->create_course(['category' => $sub->id]);
+        foreach ([$c1, $c2, $c2] as $c) {
+            $DB->insert_record('local_atrisk_flag', ['userid' => $gen->create_user()->id, 'courseid' => $c->id,
+                'inactive' => 30, 'missed' => 0, 'grade' => null, 'timecreated' => time()]);
+        }
+        $counts = \local_atrisk\local\contacts::counts_by_category();
+        $this->assertSame(3, $counts[$top->id]);
+        $this->assertSame(2, $counts[$sub->id]);
+    }
 }

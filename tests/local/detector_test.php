@@ -68,6 +68,7 @@ final class detector_test extends \advanced_testcase {
     private function assignment(int $daysago): \stdClass {
         return $this->getDataGenerator()->create_module('assign', [
             'course' => $this->course->id, 'duedate' => time() - $daysago * DAYSECS,
+            'assignsubmission_onlinetext_enabled' => 1,
         ]);
     }
 
@@ -135,7 +136,8 @@ final class detector_test extends \advanced_testcase {
         $ok = $this->student(1);
         $a1 = $this->assignment(3);
         $a2 = $this->assignment(5);
-        $this->getDataGenerator()->create_module('assign', ['course' => $this->course->id, 'duedate' => time() + DAYSECS]);
+        $this->getDataGenerator()->create_module('assign', ['course' => $this->course->id, 'duedate' => time() + DAYSECS,
+            'assignsubmission_onlinetext_enabled' => 1]);
         $this->submit($a1, $ok);
         $this->submit($a2, $ok);
         $flags = $this->flags();
@@ -206,5 +208,46 @@ final class detector_test extends \advanced_testcase {
         detector::refresh_all();
         $this->assertTrue($DB->record_exists('local_atrisk_flag', ['courseid' => $this->course->id, 'userid' => $u->id]));
         $this->assertFalse($DB->record_exists('local_atrisk_flag', ['courseid' => $hidden->id]));
+    }
+    public function test_refresh_all_skips_courses_that_ended_or_have_not_started(): void {
+        global $DB;
+        $u = $this->student(20);
+        $ended = $this->getDataGenerator()->create_course(['startdate' => time() - 400 * DAYSECS,
+            'enddate' => time() - 30 * DAYSECS]);
+        $future = $this->getDataGenerator()->create_course(['startdate' => time() + 30 * DAYSECS]);
+        foreach ([$ended, $future] as $c) {
+            $this->getDataGenerator()->enrol_user($u->id, $c->id, 'student');
+        }
+        detector::refresh_all();
+        $this->assertTrue($DB->record_exists('local_atrisk_flag', ['courseid' => $this->course->id, 'userid' => $u->id]));
+        $this->assertFalse($DB->record_exists('local_atrisk_flag', ['courseid' => $ended->id]));
+        $this->assertFalse($DB->record_exists('local_atrisk_flag', ['courseid' => $future->id]));
+    }
+
+    public function test_offline_and_group_assignments_and_overrides_are_not_missed_deadlines(): void {
+        global $DB;
+        $u = $this->student(1);
+        $gen = $this->getDataGenerator();
+        $gen->create_module('assign', ['course' => $this->course->id, 'duedate' => time() - 3 * DAYSECS,
+            'nosubmissions' => 1]);
+        $gen->create_module('assign', ['course' => $this->course->id, 'duedate' => time() - 3 * DAYSECS,
+            'teamsubmission' => 1, 'assignsubmission_onlinetext_enabled' => 1]);
+        $moved = $this->assignment(3);
+        $DB->insert_record('assign_overrides', ['assignid' => $moved->id, 'userid' => $u->id,
+            'duedate' => time() + DAYSECS]);
+        $this->assignment(4);
+        // Only the last one counts, which is below the limit of two.
+        $this->assertArrayNotHasKey($u->id, $this->flags());
+    }
+
+    public function test_deleting_a_course_removes_its_flags_and_contact_notes(): void {
+        global $DB;
+        $u = $this->student(20);
+        detector::refresh_course($this->course->id);
+        $this->setAdminUser();
+        \local_atrisk\local\contacts::record((int) $u->id, (int) $this->course->id, 'Called, left a message.');
+        delete_course($this->course->id, false);
+        $this->assertFalse($DB->record_exists('local_atrisk_flag', ['courseid' => $this->course->id]));
+        $this->assertFalse($DB->record_exists('local_atrisk_contact', ['courseid' => $this->course->id]));
     }
 }
